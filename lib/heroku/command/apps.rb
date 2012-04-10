@@ -4,22 +4,53 @@ require "heroku/command/base"
 #
 class Heroku::Command::Apps < Heroku::Command::Base
 
+  private
+
+  def p_header(message)
+    hputs("\n  == #{message}\n\n")
+  end
+
+  def p_error(message)
+    STDERR.puts("  !! #{message}\n\n")
+    exit(1)
+  end
+
+  def p_info(message)
+    hputs("  -- #{message}\n")
+  end
+
+  def p_warning(message)
+    hputs("  ~~ #{message}\n\n")
+  end
+
+  public
   # apps
   #
   # list your apps
   #
   def index
-    list = heroku.list
-    if list.size > 0
-      hputs(list.map {|name, owner|
-        if heroku.user == owner
-          name
-        else
-          "#{name.ljust(25)} #{owner}"
+    apps = api.get_apps.body
+
+    p_header("#{heroku.user} Apps")
+
+    if !apps.empty?
+      owned, shared = apps.partition {|app| app["owner_email"] == heroku.user}
+      if !owned.empty?
+        p_info("Owned by Me")
+        owned.map {|app| app['name']}.sort.each do |name|
+          hputs("  #{name}")
         end
-      }.join("\n"))
+        hputs
+      end
+      if !shared.empty?
+        p_info("Shared with Me")
+        shared.map {|app| app['name']}.sort.each do |name|
+          hputs("  #{name}")
+        end
+        hputs
+      end
     else
-      hputs("You have no apps.")
+      p_warning("You have no apps.")
     end
   end
 
