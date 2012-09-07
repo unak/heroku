@@ -18,7 +18,8 @@ class Heroku::Command::Run < Heroku::Command::Base
   def index
     command = args.join(" ")
     error("Usage: heroku run COMMAND")if command.empty?
-    run_attached(command)
+    process_data = run_attached(command)
+    exit(poll_exit_code(process_data["process"]))
   end
 
   # run:detached COMMAND
@@ -110,6 +111,7 @@ protected
       process_data
     end
     rendezvous_session(process_data["rendezvous_url"])
+    process_data
   end
 
   def rendezvous_session(rendezvous_url, &on_connect)
@@ -130,6 +132,17 @@ protected
     rescue Interrupt
     ensure
       set_buffer(true)
+    end
+  end
+
+  def poll_exit_code(process)
+    loop do
+      exit_code = api.get_ps(app).detect{|p| p["process"] == process }["exit_code"]
+      if exit_code
+        return exit_code
+      else
+        sleep 2
+      end
     end
   end
 
