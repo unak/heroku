@@ -136,14 +136,14 @@ protected
   end
 
   def poll_exit_code(id)
-    loop do
-      exit_code = api.get_ps(app).body.detect{|p| p["id"] == id }["exit_code"]
-      if exit_code
+    5.times do |i|
+      if exit_code = api.get_ps(app).body.detect{|p| p["id"] == id }["exit_code"]
         return exit_code
       else
-        sleep 1
+        sleep i # TODO: do some science around how long this typically takes.
       end
     end
+    error "Could not determine exit code."
   end
 
   def console_history_dir
