@@ -19,7 +19,7 @@ class Heroku::Command::Run < Heroku::Command::Base
     command = args.join(" ")
     error("Usage: heroku run COMMAND")if command.empty?
     process_data = run_attached(command)
-    exit(poll_exit_code(process_data["process"]))
+    exit(poll_exit_code(process_data["id"]))
   end
 
   # run:detached COMMAND
@@ -135,13 +135,13 @@ protected
     end
   end
 
-  def poll_exit_code(process)
+  def poll_exit_code(id)
     loop do
-      exit_code = api.get_ps(app).detect{|p| p["process"] == process }["exit_code"]
+      exit_code = api.get_ps(app).body.detect{|p| p["id"] == id }["exit_code"]
       if exit_code
         return exit_code
       else
-        sleep 2
+        sleep 1
       end
     end
   end
