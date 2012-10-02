@@ -5,7 +5,7 @@ class Heroku::Command::Notifications < Heroku::Command::Base
   def index
     notifications = notifications_client.get_notifications
     if notifications.empty?
-      display("#{user} has no notifications.")
+      display("#{current_user} has no notifications.")
     else
       display(notifications.map do |notification|
         out = "#{notification[:resource]}\n"
@@ -21,7 +21,7 @@ private
     Heroku::Client::Notifications.new(Heroku::Auth.user)
   end
 
-  def user
+  def current_user
     Heroku::Auth.user
   end
 end
