@@ -138,6 +138,16 @@ def stub_pg
   end
 end
 
+def stub_notifications
+  @stubbed_notifications ||= begin
+    stubbed_notifications = nil
+    any_instance_of(Heroku::Client::Notifications) do |notifications|
+      stubbed_notifications = stub(notifications)
+    end
+    stubbed_notifications
+  end
+end
+
 def stub_pgbackups
   @stubbed_pgbackups ||= begin
     stubbed_pgbackups = nil
