@@ -9,7 +9,7 @@ class Heroku::Command::Notifications < Heroku::Command::Base
     else
       display(notifications.map do |notification|
         out = "#{notification[:resource]}\n"
-        out += "  #{notification[:severity]}: #{notification[:message]}\n"
+        out += "  [#{notification[:severity]}] #{notification[:message]}\n"
         out += "  More info: #{notification[:url]}\n"
         out
       end.join("\n"))

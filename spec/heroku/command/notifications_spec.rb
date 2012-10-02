@@ -41,11 +41,11 @@ module Heroku::Command
       stderr.should == ""
       stdout.should == (<<-END_STDOUT)
 flying-monkey-123
-  info: Database HEROKU_POSTGRESQL_BROWN is over row limits
+  [info] Database HEROKU_POSTGRESQL_BROWN is over row limits
   More info: https://devcenter.heroku.com/how-to-fix-problem
 
 rising-cloud-42
-  fatal: High OOM rates
+  [fatal] High OOM rates
   More info: https://devcenter.heroku.com/oom
 END_STDOUT
     end
