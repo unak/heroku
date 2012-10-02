@@ -39,7 +39,7 @@ module Heroku::Command
       )
       stderr, stdout = execute("notifications")
       stderr.should == ""
-      stdout.should == (<<-STDOUT)
+      stdout.should == (<<-END_STDOUT)
 flying-monkey-123
   info: Database HEROKU_POSTGRESQL_BROWN is over row limits
   More info: https://devcenter.heroku.com/how-to-fix-problem
@@ -47,7 +47,7 @@ flying-monkey-123
 rising-cloud-42
   fatal: High OOM rates
   More info: https://devcenter.heroku.com/oom
-STDOUT
+END_STDOUT
     end
   end
 end
