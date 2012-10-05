@@ -5,7 +5,7 @@ class Heroku::Command::Notifications < Heroku::Command::Base
 
   # notifications
   #
-  # Displays all notifications for a user
+  # Show all notifications
   def index
     notifications = notifications_client.get_notifications
     if notifications.empty?
