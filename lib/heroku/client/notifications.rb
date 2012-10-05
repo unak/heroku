@@ -8,7 +8,7 @@ class Heroku::Client::Notifications
   end
 
   def get_notifications
-    response = notifications_resource["/notifications"].get
+    response = notifications_resource["/api/v1/notifications"].get
     json_decode(response.to_s)
   end
 

@@ -23,7 +23,7 @@ describe Heroku::Client::Notifications, '#get_notifications' do
             'severity' => 'fatal'
           }
         ]
-    url = "https://user@example.com:apitoken@keikoku.herokuapp.com/notifications"
+    url = "https://user@example.com:apitoken@keikoku.herokuapp.com/api/v1/notifications"
     stub_request(:get, url).to_return(
       :body   => json_encode(response_fixture),
       :status => 200
