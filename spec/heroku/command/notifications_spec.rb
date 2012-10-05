@@ -24,22 +24,25 @@ module Heroku::Command
       stub_notifications.get_notifications.returns(
         [
           {
-            resource: 'flying-monkey-123',
-            message:  'Database HEROKU_POSTGRESQL_BROWN is over row limits',
-            url:      'https://devcenter.heroku.com/how-to-fix-problem',
-            severity: 'info'
+            'id'          => 1,
+            'target_name' => 'flying-monkey-123',
+            'message'     => 'Database HEROKU_POSTGRESQL_BROWN is over row limits',
+            'url'         => 'https://devcenter.heroku.com/how-to-fix-problem',
+            'severity'    => 'info'
           },
           {
-            resource: 'rising-cloud-42',
-            message:  'High OOM rates',
-            url:      'https://devcenter.heroku.com/oom',
-            severity: 'fatal'
+            'id'          => 2,
+            'target_name' => 'rising-cloud-42',
+            'message'     => 'High OOM rates',
+            'url'         => 'https://devcenter.heroku.com/oom',
+            'severity'    => 'fatal'
           }
         ]
       )
       stderr, stdout = execute("notifications")
       stderr.should == ""
       stdout.should == (<<-END_STDOUT)
+=== Notifications for email@example.com (2)
 flying-monkey-123
   [info] Database HEROKU_POSTGRESQL_BROWN is over row limits
   More info: https://devcenter.heroku.com/how-to-fix-problem

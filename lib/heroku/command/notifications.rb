@@ -2,15 +2,20 @@ require 'heroku/client/notifications'
 require "heroku/command/base"
 
 class Heroku::Command::Notifications < Heroku::Command::Base
+
+  # notifications
+  #
+  # Displays all notifications for a user
   def index
     notifications = notifications_client.get_notifications
     if notifications.empty?
       display("#{current_user} has no notifications.")
     else
+      display_header("Notifications for #{current_user} (#{notifications.count})", true)
       display(notifications.map do |notification|
-        out = "#{notification[:resource]}\n"
-        out += "  [#{notification[:severity]}] #{notification[:message]}\n"
-        out += "  More info: #{notification[:url]}\n"
+        out = "#{notification['target_name']}\n"
+        out += "  [#{notification['severity']}] #{notification['message']}\n"
+        out += "  More info: #{notification['url']}\n"
         out
       end.join("\n"))
     end
