@@ -44,7 +44,7 @@ class Heroku::Command::Notifications < Heroku::Command::Base
 
 private
   def notifications_client
-    Heroku::Client::Notifications.new(Heroku::Auth.user)
+    Heroku::Client::Notifications.new(Heroku::Auth.user, Heroku::Auth.password)
   end
 
   def current_user

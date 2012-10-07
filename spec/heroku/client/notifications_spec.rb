@@ -29,7 +29,7 @@ describe Heroku::Client::Notifications, '#get_notifications' do
       status: 200
     )
 
-    notifications = Heroku::Client::Notifications.new('user@example.com').
+    notifications = Heroku::Client::Notifications.new('user@example.com', 'apitoken').
       get_notifications
     notifications.should == response_fixture
   end
@@ -39,7 +39,8 @@ describe Heroku::Client::Notifications, '#get_notifications' do
 
     stub_request(:post, url).to_return(status: 200)
 
-    result = Heroku::Client::Notifications.new('user@example.com').read_notification(1)
+    result = Heroku::Client::Notifications.new('user@example.com', 'apitoken').
+      read_notification(1)
     result.should be_true
   end
 end

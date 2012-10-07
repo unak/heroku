@@ -3,8 +3,9 @@ require "heroku/client"
 class Heroku::Client::Notifications
   include Heroku::Helpers
 
-  def initialize(user_email)
+  def initialize(user_email, password)
     @user_email = user_email
+    @password   = password
   end
 
   def get_notifications
@@ -21,8 +22,8 @@ private
   def notifications_resource
     RestClient::Resource.new(
       "https://keikoku.herokuapp.com",
-      :user     => Heroku::Auth.user,
-      :password => Heroku::Auth.password
+      :user     => @user_email,
+      :password => @password
     )
   end
 end
