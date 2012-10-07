@@ -21,6 +21,27 @@ class Heroku::Command::Notifications < Heroku::Command::Base
     end
   end
 
+  # notifications:read
+  #
+  # Mark notifications as read
+  def read
+    args = shift_argument
+    all_notifications = notifications_client.get_notifications
+    if args
+      notification_sequences = Array(args.gsub(/\s/, '').split(","))
+      notifications = all_notifications.select do |n|
+        notification_sequences.include? n['account_sequence']
+      end
+    else
+      notifications = all_notifications
+    end
+    notifications.each do |n|
+      if notifications_client.read_notification(n['id'])
+        display("Marked #{n['account_sequence']} as read", true)
+      end
+    end
+  end
+
 private
   def notifications_client
     Heroku::Client::Notifications.new(Heroku::Auth.user)

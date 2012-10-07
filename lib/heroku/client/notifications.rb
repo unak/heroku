@@ -12,6 +12,11 @@ class Heroku::Client::Notifications
     json_decode(response.to_s)
   end
 
+  def read_notification(id)
+    response = notifications_resource["/api/v1/notifications/#{id}/read"].post ''
+    response.code == 200
+  end
+
 private
   def notifications_resource
     RestClient::Resource.new(
