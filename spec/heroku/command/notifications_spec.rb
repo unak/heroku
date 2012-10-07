@@ -24,18 +24,20 @@ module Heroku::Command
       stub_notifications.get_notifications.returns(
         [
           {
-            'id'          => 1,
-            'target_name' => 'flying-monkey-123',
-            'message'     => 'Database HEROKU_POSTGRESQL_BROWN is over row limits',
-            'url'         => 'https://devcenter.heroku.com/how-to-fix-problem',
-            'severity'    => 'info'
+            'id'               => 1,
+            'account_sequence' => 30,
+            'target_name'      => 'flying-monkey-123',
+            'message'          => 'Database HEROKU_POSTGRESQL_BROWN is over row limits',
+            'url'              => 'https://devcenter.heroku.com/how-to-fix-problem',
+            'severity'         => 'info'
           },
           {
-            'id'          => 2,
-            'target_name' => 'rising-cloud-42',
-            'message'     => 'High OOM rates',
-            'url'         => 'https://devcenter.heroku.com/oom',
-            'severity'    => 'fatal'
+            'id'               => 2,
+            'account_sequence' => 31,
+            'target_name'      => 'rising-cloud-42',
+            'message'          => 'High OOM rates',
+            'url'              => 'https://devcenter.heroku.com/oom',
+            'severity'         => 'fatal'
           }
         ]
       )
