@@ -18,26 +18,8 @@ class Heroku::Command::Notifications < Heroku::Command::Base
         out += "  More info: #{notification['url']}\n"
         out
       end.join("\n"))
-    end
-  end
-
-  # notifications:read
-  #
-  # Mark notifications as read
-  def read
-    args = shift_argument
-    all_notifications = notifications_client.get_notifications
-    if args
-      notification_sequences = Array(args.gsub(/\s/, '').split(","))
-      notifications = all_notifications.select do |n|
-        notification_sequences.include? n['account_sequence']
-      end
-    else
-      notifications = all_notifications
-    end
-    notifications.each do |n|
-      if notifications_client.read_notification(n['id'])
-        display("Marked #{n['account_sequence']} as read", true)
+      notifications.each do |notification|
+        notifications_client.read_notification(notification['id'])
       end
     end
   end
