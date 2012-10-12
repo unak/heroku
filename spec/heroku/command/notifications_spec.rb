@@ -14,17 +14,30 @@ module Heroku::Command
     end
 
     it "shows an empty list when no notifications available" do
-      stub_notifications.get_notifications.returns([])
+      notification_list = Keikokuc::NotificationList.new(user: 'email@example.com',
+                                                         password: '123')
+      mock(notification_list).fetch { true }
+      notification_list.notifications = []
+      any_instance_of(Heroku::Command::Notifications) do |command|
+        stub(command).notification_list { notification_list }
+      end
       stderr, stdout = execute("notifications")
       stderr.should == ""
-      stdout.should =~ /has no notifications/
+      stdout.should == "email@example.com has no notifications.\n"
     end
 
-    it "shows notifications if they exist" do
-      stub_notifications.get_notifications.returns(
-        user_notifications
-      )
-      stub_notifications.read_notification
+    it "shows notifications if they exist and marks them as read" do
+      notification_list = Keikokuc::NotificationList.new(user: 'email@example.com',
+                                                         password: '123')
+      mock(notification_list).read_all { true }
+      mock(notification_list).fetch { true }
+      notification_list.notifications = user_notifications.map do |attributes|
+        notification = Keikokuc::Notification.new(attributes)
+        notification
+      end
+      any_instance_of(Heroku::Command::Notifications) do |command|
+        stub(command).notification_list { notification_list }
+      end
       stderr, stdout = execute("notifications")
       stderr.should == ""
       stdout.should == (<<-END_STDOUT)
@@ -39,35 +52,23 @@ n31: rising-cloud-42
 END_STDOUT
     end
 
-    it "marks them as read when shown" do
-      any_instance_of(Heroku::Client::Notifications) do |notifications|
-        mock(notifications).get_notifications { user_notifications }
-        mock(notifications).get_notifications { [] }
-        mock(notifications).read_notification(1)
-        mock(notifications).read_notification(2)
-        execute("notifications")
-        stderr, stdout = execute("notifications")
-        stdout.should == "email@example.com has no notifications.\n"
-      end
-    end
-
     def user_notifications
         [
           {
-            'id'               => 1,
-            'account_sequence' => 'n30',
-            'target_name'      => 'flying-monkey-123',
-            'message'          => 'Database HEROKU_POSTGRESQL_BROWN is over row limits',
-            'url'              => 'https://devcenter.heroku.com/how-to-fix-problem',
-            'severity'         => 'info'
+            id:               1,
+            account_sequence: 'n30',
+            target_name:      'flying-monkey-123',
+            message:          'Database HEROKU_POSTGRESQL_BROWN is over row limits',
+            url:              'https://devcenter.heroku.com/how-to-fix-problem',
+            severity:         'info'
           },
           {
-            'id'               => 2,
-            'account_sequence' => 'n31',
-            'target_name'      => 'rising-cloud-42',
-            'message'          => 'High OOM rates',
-            'url'              => 'https://devcenter.heroku.com/oom',
-            'severity'         => 'fatal'
+            id:               2,
+            account_sequence: 'n31',
+            target_name:      'rising-cloud-42',
+            message:          'High OOM rates',
+            url:              'https://devcenter.heroku.com/oom',
+            severity:         'fatal'
           }
         ]
     end
