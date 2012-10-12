@@ -29,6 +29,9 @@ private
   end
 
   def notification_list # :nodoc:
-    @notification_list ||= Keikokuc::NotificationList.new(user: current_user, password: Heroku::Auth.password)
+    @notification_list ||= Keikokuc::NotificationList.new(
+      :user     => current_user,
+      :password => Heroku::Auth.password
+    )
   end
 end
