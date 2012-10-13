@@ -27,7 +27,7 @@ GEM
     heroku-api (0.3.5)
       excon (~> 0.16.1)
     json (1.6.5)
-    keikokuc (0.5)
+    keikokuc (0.6)
       rest-client
       yajl-ruby
     launchy (2.1.0)
