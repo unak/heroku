@@ -49,6 +49,8 @@ class Heroku::Command::Logs < Heroku::Command::Base
     raise(interrupt)
   end
 
+  alias_command "log", "logs"
+
   # logs:drains
   #
   # DEPRECATED: use `heroku drains`
