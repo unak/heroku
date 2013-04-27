@@ -173,7 +173,10 @@ module Heroku::Command
         end
       when 1 then
         addon_to_open = matches.first
-        launchy("Opening #{addon_to_open} for #{app}", app_addon_url(addon_to_open))
+        data = json_decode(api.instance_variable_get(:@connection).
+          get(:path => "/apps/#{app}/addons/#{addon_to_open}/sso", :expects => 200).body)
+        # todo: handle POST
+        launchy("Opening #{addon_to_open} for #{app}", data["url"])
       else
         error("Ambiguous addon name: #{addon}\nPerhaps you meant #{matches[0...-1].map {|match| "`#{match}`"}.join(', ')} or `#{matches.last}`.\n")
       end
@@ -183,10 +186,6 @@ module Heroku::Command
 
     def addon_docs_url(addon)
       "https://devcenter.#{heroku.host}/articles/#{addon.split(':').first}"
-    end
-
-    def app_addon_url(addon)
-      "https://api.#{heroku.host}/apps/#{app}/addons/#{addon}"
     end
 
     def partition_addons(addons)
