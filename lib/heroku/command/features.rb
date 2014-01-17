@@ -57,6 +57,9 @@ class Heroku::Command::Features < Heroku::Command::Base
     validate_arguments!
 
     feature_data = api.get_feature(feature_name, app).body
+
+    error "No such feature: #{feature_name}" unless ["general", "limited"].include?(feature_data["state"])
+
     styled_header(feature_data['name'])
     styled_hash({
       'Summary' => feature_data['summary'],
