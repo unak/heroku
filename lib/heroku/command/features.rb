@@ -21,7 +21,7 @@ class Heroku::Command::Features < Heroku::Command::Base
     validate_arguments!
 
     user_features, app_features = api.get_features(app).body.select do |feature|
-      feature["state"] == "general"
+      ["general", "limited"].include?(feature["state"])
     end.sort_by do |feature|
       feature["name"]
     end.partition do |feature|
@@ -78,7 +78,7 @@ class Heroku::Command::Features < Heroku::Command::Base
     error "Usage: heroku features:disable FEATURE\nMust specify FEATURE to disable." unless feature_name
     validate_arguments!
 
-    feature = api.get_features(app).body.detect { |f| f["name"] == feature_name && f["state"] == "general" }
+    feature = api.get_features(app).body.detect { |f| f["name"] == feature_name && ["general", "limited"].include?(f["state"]) }
     message = "Disabling #{feature_name} "
 
     error "No such feature: #{feature_name}" unless feature
@@ -109,7 +109,7 @@ class Heroku::Command::Features < Heroku::Command::Base
     error "Usage: heroku features:enable FEATURE\nMust specify FEATURE to enable." unless feature_name
     validate_arguments!
 
-    feature = api.get_features.body.detect { |f| f["name"] == feature_name && f["state"] == "general" }
+    feature = api.get_features.body.detect { |f| f["name"] == feature_name && ["general", "limited"].include?(f["state"]) }
     message = "Enabling #{feature_name} "
 
     error "No such feature: #{feature_name}" unless feature
