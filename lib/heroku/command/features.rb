@@ -1,12 +1,12 @@
 require "heroku/command/base"
 
-# manage optional features
+# manage general features
 #
-class Heroku::Command::Labs < Heroku::Command::Base
+class Heroku::Command::Features < Heroku::Command::Base
 
-  # labs
+  # features
   #
-  # list experimental features
+  # list general features
   #
   #Example:
   #
@@ -20,7 +20,7 @@ class Heroku::Command::Labs < Heroku::Command::Base
   def index
     validate_arguments!
 
-    user_features, app_features = api.get_features(app).body.reject do |feature|
+    user_features, app_features = api.get_features(app).body.select do |feature|
       feature["type"] == "general"
     end.sort_by do |feature|
       feature["name"]
@@ -37,22 +37,22 @@ class Heroku::Command::Labs < Heroku::Command::Base
     display_features app_features
   end
 
-  alias_command "labs:list", "labs"
+  alias_command "features:list", "features"
 
-  # labs:info FEATURE
+  # features:info FEATURE
   #
   # displays additional information about FEATURE
   #
   #Example:
   #
-  # $ heroku labs:info user_env_compile
+  # $ heroku features:info user_env_compile
   # === user_env_compile
   # Docs:    http://devcenter.heroku.com/articles/labs-user-env-compile
   # Summary: Add user config vars to the environment during slug compilation
   #
   def info
     unless feature_name = shift_argument
-      error("Usage: heroku labs:info FEATURE\nMust specify FEATURE for info.")
+      error("Usage: heroku features:info FEATURE\nMust specify FEATURE for info.")
     end
     validate_arguments!
 
@@ -64,21 +64,21 @@ class Heroku::Command::Labs < Heroku::Command::Base
     })
   end
 
-  # labs:disable FEATURE
+  # features:disable FEATURE
   #
   # disables an experimental feature
   #
   #Example:
   #
-  # $ heroku labs:disable ninja-power
+  # $ heroku features:disable ninja-power
   # Disabling ninja-power feature for me@example.org... done
   #
   def disable
     feature_name = shift_argument
-    error "Usage: heroku labs:disable FEATURE\nMust specify FEATURE to disable." unless feature_name
+    error "Usage: heroku features:disable FEATURE\nMust specify FEATURE to disable." unless feature_name
     validate_arguments!
 
-    feature = api.get_features(app).body.detect { |f| f["name"] == feature_name && f["type"] != "general" }
+    feature = api.get_features(app).body.detect { |f| f["name"] == feature_name && f["type"] == "general" }
     message = "Disabling #{feature_name} "
 
     error "No such feature: #{feature_name}" unless feature
@@ -95,21 +95,21 @@ class Heroku::Command::Labs < Heroku::Command::Base
     end
   end
 
-  # labs:enable FEATURE
+  # features:enable FEATURE
   #
   # enables an experimental feature
   #
   #Example:
   #
-  # $ heroku labs:enable ninja-power
+  # $ heroku features:enable ninja-power
   # Enabling ninja-power feature for me@example.org... done
   #
   def enable
     feature_name = shift_argument
-    error "Usage: heroku labs:enable FEATURE\nMust specify FEATURE to enable." unless feature_name
+    error "Usage: heroku features:enable FEATURE\nMust specify FEATURE to enable." unless feature_name
     validate_arguments!
 
-    feature = api.get_features.body.detect { |f| f["name"] == feature_name && f["type"] != "general" }
+    feature = api.get_features.body.detect { |f| f["name"] == feature_name && f["type"] == "general" }
     message = "Enabling #{feature_name} "
 
     error "No such feature: #{feature_name}" unless feature
@@ -125,7 +125,6 @@ class Heroku::Command::Labs < Heroku::Command::Base
       api.post_feature(feature_name, app).body
     end
 
-    display "WARNING: This feature is experimental and may change or be removed without notice."
     display "For more information see: #{feature_data["docs"]}" if feature_data["docs"]
   end
 
