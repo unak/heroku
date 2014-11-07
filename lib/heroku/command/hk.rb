@@ -14,12 +14,13 @@ module Heroku::Command
     def setup
       return if File.exist? hk_path
       $stderr.print 'setting up hk...'
+      FileUtils.mkdir_p File.dirname(hk_path)
       resp = Excon.get(url, middlewares: Excon.defaults[:middlewares] + [Excon::Middleware::Decompress])
       open(hk_path, "wb") do |file|
         file.write(resp.body)
       end
       File.chmod(0755, hk_path)
-      if Digest::SHA1.file(hk_path).hexdigest != manifest[os][arch]['sha1']
+      if Digest::SHA1.file(hk_path).hexdigest != manifest['builds'][os][arch]['sha1']
         File.delete hk_path
         raise 'SHA mismatch for hk'
       end
@@ -27,7 +28,7 @@ module Heroku::Command
     end
 
     def hk_path
-      File.join(home_directory, ".heroku", "hk")
+      File.join(home_directory, ".heroku", "bin", "hk")
     end
 
     def arch
@@ -58,7 +59,7 @@ module Heroku::Command
     end
 
     def url
-      manifest[os][arch]['url'] + ".gz"
+      manifest['builds'][os][arch]['url'] + ".gz"
     end
   end
 end
