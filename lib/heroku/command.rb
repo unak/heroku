@@ -1,5 +1,6 @@
 require 'heroku/helpers'
 require 'heroku/plugin'
+require 'heroku/jsplugin'
 require 'heroku/version'
 require "optparse"
 
@@ -14,6 +15,7 @@ module Heroku
         require file
       end
       Heroku::Plugin.load!
+      Heroku::JSPlugin.load!
       unregister_commands_made_private_after_the_fact
     end
 
