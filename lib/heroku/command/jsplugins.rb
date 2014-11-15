@@ -1,34 +1,34 @@
 module Heroku::Command
-  class HK < Base
+  class JSPlugins < Base
     def index
       setup
-      run_hk(ARGV[1..-1])
+      run_heroku_plugins(ARGV[1..-1])
     end
 
     private
 
-    def run_hk(args)
-      exec(hk_path, *args)
+    def run_heroku_plugins(args)
+      exec(heroku_plugins_path, *args)
     end
 
     def setup
-      return if File.exist? hk_path
-      $stderr.print 'setting up hk...'
-      FileUtils.mkdir_p File.dirname(hk_path)
+      return if File.exist? heroku_plugins_path
+      $stderr.print 'setting up heroku-plugins...'
+      FileUtils.mkdir_p File.dirname(heroku_plugins_path)
       resp = Excon.get(url, middlewares: Excon.defaults[:middlewares] + [Excon::Middleware::Decompress])
-      open(hk_path, "wb") do |file|
+      open(heroku_plugins_path, "wb") do |file|
         file.write(resp.body)
       end
-      File.chmod(0755, hk_path)
-      if Digest::SHA1.file(hk_path).hexdigest != manifest['builds'][os][arch]['sha1']
-        File.delete hk_path
-        raise 'SHA mismatch for hk'
+      File.chmod(0755, heroku_plugins_path)
+      if Digest::SHA1.file(heroku_plugins_path).hexdigest != manifest['builds'][os][arch]['sha1']
+        File.delete heroku_plugins_path
+        raise 'SHA mismatch for heroku-plugins'
       end
       $stderr.puts 'done'
     end
 
-    def hk_path
-      File.join(home_directory, ".heroku", "bin", "hk")
+    def heroku_plugins_path
+      File.join(home_directory, ".heroku", "heroku-plugins")
     end
 
     def arch
@@ -55,7 +55,7 @@ module Heroku::Command
     end
 
     def manifest
-      @manifest ||= JSON.parse(Excon.get("https://d1gvo455cekpjp.cloudfront.net/hk/dev/manifest.json").body)
+      @manifest ||= JSON.parse(Excon.get("https://d1gvo455cekpjp.cloudfront.net/heroku-plugins/dev/manifest.json").body)
     end
 
     def url
